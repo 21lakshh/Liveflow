@@ -1,0 +1,112 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--vscode-editor-background, #121218);
+  color: var(--vscode-editor-foreground, #cccccc);
+  font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: var(--vscode-font-size, 13px);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling (matches VS Code) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes handoff-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 30px 10px rgba(34, 197, 94, 0.3);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+/* ReactFlow overrides for dark theme */
+.react-flow__background {
+  background: var(--vscode-editor-background, #121218) !important;
+}
+
+.react-flow__controls button {
+  background: #2a2a2a !important;
+  border-color: #444 !important;
+  color: #ccc !important;
+}
+
+.react-flow__controls button:hover {
+  background: #3a3a3a !important;
+}
+
+.react-flow__edge-text {
+  fill: #888 !important;
+}
+
+.react-flow__minimap {
+  background: #1a1a1a !important;
+}
+
+/* Button styles */
+button {
+  outline: none;
+  border: none;
+  font-family: inherit;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+button:active {
+  filter: brightness(0.9);
+}
