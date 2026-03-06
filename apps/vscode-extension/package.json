@@ -54,10 +54,11 @@
   "scripts": {
     "build": "npm run build:extension && npm run build:webview",
     "build:extension": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --minify",
-    "build:webview": "cd webview && npm run build && rm -rf ../dist/webview && cp -r dist ../dist/webview",
+    "build:webview": "rm -rf dist/webview && cp -r ../../packages/webview/dist dist/webview",
     "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --watch"
   },
   "devDependencies": {
+    "@liveflow/webview": "*",
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.85.0",
     "@types/ws": "^8.18.1",
