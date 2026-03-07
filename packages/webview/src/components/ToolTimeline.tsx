@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLiveflowStore } from "../store";
-import type { ToolCall } from "../types";
+import { useLiveflowStore } from "@/store";
+import type { ToolCall } from "@/types";
 
 // Colors matching AgentGraph
 const AGENT_COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f97316", "#14b8a6", "#ef4444"];

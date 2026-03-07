@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLiveflowStore } from "../store";
-import type { AgentState, UserState } from "../types";
+import { useLiveflowStore } from "@/store";
+import type { AgentState, UserState } from "@/types";
 
 // Agent state → icon + color
 const AGENT_STATE_CONFIG: Record<AgentState, { icon: string; color: string; label: string }> = {

@@ -1,13 +1,13 @@
 
 import React, { useState } from "react";
-import { useVscodeMessages } from "./hooks/useVscodeMessages";
-import { useLiveflowStore } from "./store";
-import { StateIndicator } from "./components/StateIndicator";
-import { AgentGraph } from "./components/AgentGraph";
-import { ToolTimeline } from "./components/ToolTimeline";
-import { Transcript } from "./components/Transcript";
-import { ChatInspector } from "./components/ChatInspector";
-import { WelcomeView } from "./components/WelcomeView";
+import { useVscodeMessages } from "@/hooks/useVscodeMessages";
+import { useLiveflowStore } from "@/store";
+import { StateIndicator } from "@/components/StateIndicator";
+import { AgentGraph } from "@/components/AgentGraph";
+import { ToolTimeline } from "@/components/ToolTimeline";
+import { Transcript } from "@/components/Transcript";
+import { ChatInspector } from "@/components/ChatInspector";
+import { WelcomeView } from "@/components/WelcomeView";
 
 // Panel wrapper with collapsible header
 function Panel({

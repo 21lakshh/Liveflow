@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Cpu, Wrench, Mic, Activity } from "lucide-react";
 import { Matrix } from "@/components/ui/matrix";
-import FadeIn from "./FadeIn";
+import FadeIn from "@/components/landing/FadeIn";
 
 const MockExtensionUI = () => {
   const [activeLogIndex, setActiveLogIndex] = useState(0);

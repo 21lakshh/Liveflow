@@ -11,8 +11,8 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "dagre";
-import { useLiveflowStore } from "../store";
-import type { AgentInfo, AgentState } from "../types";
+import { useLiveflowStore } from "@/store";
+import type { AgentInfo, AgentState } from "@/types";
 
 const STATE_COLORS: Record<AgentState, string> = {
   initializing: "#888",

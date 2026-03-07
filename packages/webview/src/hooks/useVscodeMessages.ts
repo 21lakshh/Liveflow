@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLiveflowStore } from "../store";
+import { useLiveflowStore } from "@/store";
 
 // VS Code webview API (injected by VS Code into the webview's global scope)
 declare function acquireVsCodeApi(): {

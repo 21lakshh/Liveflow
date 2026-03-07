@@ -1,6 +1,5 @@
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef, type ReactNode } from "react";
 
 const FadeIn = ({ children, delay = 0 }: { children: ReactNode; delay?: number }) => {
   const ref = useRef(null);

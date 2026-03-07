@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import HeroVisualizer from "./HeroVisualizer";
+import HeroVisualizer from "@/components/landing/HeroVisualizer";
 
 const HeroSection = () => {
   return (

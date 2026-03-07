@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { useLiveflowStore } from "../store";
-import type { ChatContextItem } from "../types";
+import { useLiveflowStore } from "@/store";
+import type { ChatContextItem } from "@/types";
 
 // Colors for different item types
 const TYPE_CONFIG: Record<string, { color: string; icon: string; label: string }> = {

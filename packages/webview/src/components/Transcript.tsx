@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { useLiveflowStore } from "../store";
+import { useLiveflowStore } from "@/store";
 
 export function Transcript() {
   const transcripts = useLiveflowStore((s) => s.transcripts);
