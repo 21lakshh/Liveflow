@@ -21,6 +21,24 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "liveflow-sidebar",
+          "title": "Liveflow",
+          "icon": "media/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "liveflow-sidebar": [
+        {
+          "type": "webview",
+          "id": "liveflow.sidebar",
+          "name": "Liveflow"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "liveflow.runAgent",
@@ -30,7 +48,7 @@
       },
       {
         "command": "liveflow.openPanel",
-        "title": "Open Liveflow Panel",
+        "title": "Show Liveflow Sidebar",
         "icon": "$(graph)",
         "category": "Liveflow"
       },

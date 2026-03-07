@@ -1,6 +1,7 @@
 # Exclude everything except what's needed
 **
 !dist/**
+!media/**
 !package.json
 !LICENSE
 !README.md

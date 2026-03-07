@@ -1,101 +1,117 @@
 import * as vscode from "vscode";
 import { LiveflowMessage } from "./types";
 
-export class LiveflowWebviewProvider {
-  private panel: vscode.WebviewPanel | null = null;
-  private extensionUri: vscode.Uri;
+/**
+ * LiveflowWebviewProvider implements vscode.WebviewViewProvider so the
+ * Liveflow dashboard lives in the VS Code Activity Bar sidebar.
+ *
+ * VS Code calls resolveWebviewView() the first time the sidebar panel
+ * becomes visible. From that point on we hold a reference to the
+ * WebviewView and use it for all message passing.
+ */
+export class LiveflowWebviewProvider implements vscode.WebviewViewProvider {
+  private _view: vscode.WebviewView | undefined;
+  private readonly extensionUri: vscode.Uri;
   private messageQueue: LiveflowMessage[] = [];
   private webviewReady = false;
-  // Messages that should always be available on load (code_scan + session_init)
+  // Messages that must always be available on load (code_scan + session_init)
   private persistentMessages: LiveflowMessage[] = [];
+
+  /** The view-id declared in package.json contributes.views */
+  static readonly viewId = "liveflow.sidebar";
 
   constructor(extensionUri: vscode.Uri) {
     this.extensionUri = extensionUri;
   }
 
   /**
+   * Called by VS Code when the sidebar panel is first shown (or after a
+   * context rebuild). Configure the webview and wire up message handlers.
+   */
+  resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    _context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken
+  ): void {
+    this._view = webviewView;
+
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [
+        vscode.Uri.joinPath(this.extensionUri, "dist", "webview"),
+      ],
+    };
+
+    webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+
+    // Handle messages from the React app
+    webviewView.webview.onDidReceiveMessage((msg) => {
+      if (msg.type === "webview_ready") {
+        this.webviewReady = true;
+        // Re-deliver persistent messages (code_scan, session_init).
+        // They're already in the HTML embed via __LIVEFLOW_INITIAL_MESSAGES__
+        // but re-sending is idempotent and covers late arrivals.
+        for (const persistent of this.persistentMessages) {
+          this._view?.webview.postMessage(persistent);
+        }
+        // Flush queued live messages
+        for (const queued of this.messageQueue) {
+          this._view?.webview.postMessage(queued);
+        }
+        this.messageQueue = [];
+      }
+    });
+
+    webviewView.onDidDispose(() => {
+      this._view = undefined;
+      this.webviewReady = false;
+    });
+
+    // If the view becomes visible again after being hidden, refresh the HTML
+    // so the latest persistent messages are embedded.
+    webviewView.onDidChangeVisibility(() => {
+      if (webviewView.visible) {
+        webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+      }
+    });
+  }
+
+  /**
    * Store a message so it's embedded directly in the webview HTML.
    * Use this for code_scan and session_init so they're available
-   * synchronously before React even mounts — zero timing race.
+   * synchronously before React mounts — zero timing race.
    *
    * If the webview is already ready (React mounted), sends directly via postMessage.
    */
   setPersistentMessage(msg: LiveflowMessage): void {
-    // Replace existing message of the same type
     const idx = this.persistentMessages.findIndex((m) => m.type === msg.type);
     if (idx >= 0) {
       this.persistentMessages[idx] = msg;
     } else {
       this.persistentMessages.push(msg);
     }
-    // If React is already ready, deliver directly
-    if (this.panel && this.webviewReady) {
-      this.panel.webview.postMessage(msg);
+    if (this._view && this.webviewReady) {
+      this._view.webview.postMessage(msg);
     }
-    // If not ready yet: the message is embedded in the HTML (via getHtmlContent)
-    // and will also be re-sent from persistentMessages when webview_ready fires
   }
 
   /**
-   * Open (or focus) the Liveflow dashboard panel.
-   *
-   * Creates a webview panel in the editor area with:
-   * - retainContextWhenHidden: true → keeps React state alive when user switches tabs
-   * - localResourceRoots → allows loading the built React app assets
+   * Reveal the Liveflow sidebar panel in the Activity Bar.
+   * Works whether the sidebar is hidden, collapsed, or already visible.
    */
   show(): void {
-    if (this.panel) {
-      this.panel.reveal(vscode.ViewColumn.Beside);
-      return;
-    }
-
-    this.panel = vscode.window.createWebviewPanel(
-      "liveflow",
-      "Liveflow",
-      vscode.ViewColumn.Beside,
-      {
-        enableScripts: true, // React needs JavaScript
-        retainContextWhenHidden: true, // Don't destroy state on tab switch
-        localResourceRoots: [
-          vscode.Uri.joinPath(this.extensionUri, "dist", "webview"),
-        ],
-      }
+    vscode.commands.executeCommand(
+      `${LiveflowWebviewProvider.viewId}.focus`
     );
-
-    this.panel.webview.html = this.getHtmlContent();
-
-    // Handle messages from the React app
-    this.panel.webview.onDidReceiveMessage((msg) => {
-      if (msg.type === "webview_ready") {
-        this.webviewReady = true;
-        // Re-send persistent messages first (code_scan, session_init).
-        // These may already be in the HTML embed but re-sending is idempotent
-        // and covers the case where they arrived after the HTML was generated.
-        for (const persistent of this.persistentMessages) {
-          this.panel?.webview.postMessage(persistent);
-        }
-        // Then flush any live messages queued while React was loading
-        for (const queued of this.messageQueue) {
-          this.panel?.webview.postMessage(queued);
-        }
-        this.messageQueue = [];
-      }
-    });
-
-    this.panel.onDidDispose(() => {
-      this.panel = null;
-      this.webviewReady = false;
-    });
   }
 
   /**
    * Forward a Liveflow message from the WebSocket to the React app.
-   * Queue messages until the webview has signaled it's ready ("webview_ready").
-   * This prevents losing messages that arrive between panel creation and React mount.
+   * Queues messages until the webview signals it's ready ("webview_ready").
    */
   postMessage(msg: LiveflowMessage): void {
-    if (this.panel && this.webviewReady) {
-      this.panel.webview.postMessage(msg);
+    if (this._view && this.webviewReady) {
+      this._view.webview.postMessage(msg);
     } else {
       this.messageQueue.push(msg);
     }
@@ -103,39 +119,36 @@ export class LiveflowWebviewProvider {
 
   /** Update the connection status indicator in the webview. */
   setConnectionStatus(connected: boolean): void {
-    this.postMessage({
-      type: "connection_status",
-      connected,
-    } as any);
+    this.postMessage({ type: "connection_status", connected } as any);
   }
 
-  /** Check if the panel is currently visible. */
+  /** True if the sidebar panel is currently visible to the user. */
   get isVisible(): boolean {
-    return this.panel !== null;
+    return this._view !== undefined && this._view.visible;
   }
 
-  /** Close the panel. */
-  dispose(): void {
-    this.panel?.dispose();
-    this.panel = null;
+  /**
+   * Reset internal state (called when an agent session stops).
+   * Does NOT destroy the sidebar view — it stays registered.
+   */
+  reset(): void {
     this.messageQueue = [];
     this.persistentMessages = [];
     this.webviewReady = false;
+    // Reload HTML so stale data is cleared
+    if (this._view) {
+      this._view.webview.html = this.getHtmlContent(this._view.webview);
+    }
   }
 
   /**
    * Generate the HTML that hosts the React app.
    *
-   * In development, we load from the Vite dev server.
-   * In production, we load the built assets from dist/webview/.
-   *
-   * The key security measure is the Content-Security-Policy (CSP) which
-   * restricts what the webview can load — only our own scripts and styles.
+   * Embeds persistent messages (code_scan, session_init) synchronously
+   * as window.__LIVEFLOW_INITIAL_MESSAGES__ before React loads — this
+   * eliminates all timing races between message arrival and React mount.
    */
-  private getHtmlContent(): string {
-    const webview = this.panel!.webview;
-
-    // Resolve paths to the built React app assets
+  private getHtmlContent(webview: vscode.Webview): string {
     const webviewDistPath = vscode.Uri.joinPath(
       this.extensionUri,
       "dist",
@@ -148,11 +161,7 @@ export class LiveflowWebviewProvider {
       vscode.Uri.joinPath(webviewDistPath, "index.css")
     );
 
-    // Nonce for CSP — prevents injection attacks
     const nonce = getNonce();
-
-    // Embed persistent messages (code_scan, session_init) as a synchronous
-    // script that runs BEFORE React loads. This eliminates all timing races.
     const initialData = JSON.stringify(this.persistentMessages);
 
     return `<!DOCTYPE html>

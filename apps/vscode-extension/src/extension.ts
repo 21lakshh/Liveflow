@@ -16,6 +16,17 @@ let portWatcher: NodeJS.Timeout | null = null;
 export function activate(context: vscode.ExtensionContext) {
   console.log("[Liveflow] Extension activating...");
 
+  // Create the sidebar webview provider and register it immediately.
+  // VS Code will call resolveWebviewView() when the sidebar panel is first shown.
+  webviewProvider = new LiveflowWebviewProvider(context.extensionUri);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      LiveflowWebviewProvider.viewId,
+      webviewProvider,
+      { webviewOptions: { retainContextWhenHidden: true } }
+    )
+  );
+
   // Check if this is a LiveKit project and set context for UI elements
   detectLiveKitProject().then((isLiveKit) => {
     vscode.commands.executeCommand(
@@ -47,47 +58,27 @@ export function activate(context: vscode.ExtensionContext) {
           statusBarItem.tooltip = "Click to stop Liveflow";
         }
       } else if (wsClient) {
-        // Already connected — just show the panel
-        if (webviewProvider) {
-          webviewProvider.show();
-        } else {
-          connectAndShowPanel(context, 0); // reconnect
-        }
+        // Already connected — just show the sidebar panel
+        webviewProvider?.show();
       } else {
         runWithLiveflow(context);
       }
     })
   );
 
-  // "Open Liveflow Panel" — opens panel immediately, connects when server is found
+  // "Open Liveflow Panel" — reveals the sidebar, connects if server is found
   context.subscriptions.push(
     vscode.commands.registerCommand("liveflow.openPanel", () => {
-      if (webviewProvider?.isVisible) {
-        webviewProvider.show();
-        if (!wsClient) {
-          // Panel is open but no connection — try to find server
-          const port = findRunningServerPort();
-          if (port !== null) {
-            connectToServer(context, port);
-          }
+      webviewProvider?.show();
+
+      if (!wsClient) {
+        const port = findRunningServerPort();
+        if (port !== null) {
+          connectToServer(context, port);
+        } else {
+          vscode.window.showInformationMessage("Liveflow: Sidebar open. Waiting for server... Run 'python -m liveflow agent.py dev'.");
+          watchForPortFile(context);
         }
-        return;
-      }
-
-      // Always open the panel immediately (even without a server)
-      if (!webviewProvider) {
-        webviewProvider = new LiveflowWebviewProvider(context.extensionUri);
-      }
-      webviewProvider.show();
-
-      // Try to connect to a running server
-      const port = findRunningServerPort();
-      if (port !== null) {
-        connectToServer(context, port);
-      } else {
-        // No server yet — start polling for one
-        vscode.window.showInformationMessage("Liveflow: Panel open. Waiting for server... Run 'python -m liveflow agent.py dev'.");
-        watchForPortFile(context);
       }
     })
   );
@@ -439,11 +430,8 @@ function connectToServer(
   // Create WebSocket client
   wsClient = new LiveflowWsClient(port);
 
-  // Ensure webview exists
-  if (!webviewProvider) {
-    webviewProvider = new LiveflowWebviewProvider(context.extensionUri);
-  }
-  webviewProvider.show();
+  // Ensure webview is visible
+  webviewProvider?.show();
 
   // Forward all messages from Python → webview
   // For code_scan and session_init, store persistently so they're embedded
@@ -507,11 +495,8 @@ function stopLiveflow() {
     wsClient = null;
   }
 
-  // Close panel
-  if (webviewProvider) {
-    webviewProvider.dispose();
-    webviewProvider = null;
-  }
+  // Reset webview state (clears messages/queue but keeps sidebar registered)
+  webviewProvider?.reset();
 
   // Stop port watcher
   if (portWatcher) {
