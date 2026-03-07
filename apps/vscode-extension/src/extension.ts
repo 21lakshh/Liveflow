@@ -19,6 +19,26 @@ export function activate(context: vscode.ExtensionContext) {
   // Create the sidebar webview provider and register it immediately.
   // VS Code will call resolveWebviewView() when the sidebar panel is first shown.
   webviewProvider = new LiveflowWebviewProvider(context.extensionUri);
+
+  // When the sidebar becomes visible, try to auto-connect to a running server
+  webviewProvider.onViewReady = () => {
+    if (!wsClient) {
+      const port = findRunningServerPort();
+      if (port !== null) {
+        console.log(`[Liveflow] Sidebar visible — found server on port ${port}, connecting...`);
+        connectToServer(context, port);
+        if (statusBarItem) {
+          statusBarItem.text = "$(sync~spin) Liveflow Running";
+          statusBarItem.command = "liveflow.stopAgent";
+          statusBarItem.tooltip = "Click to stop Liveflow";
+        }
+      } else {
+        // No server yet — start polling so we connect as soon as one appears
+        watchForPortFile(context);
+      }
+    }
+  };
+
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       LiveflowWebviewProvider.viewId,

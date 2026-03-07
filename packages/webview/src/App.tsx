@@ -1,11 +1,13 @@
 
 import React, { useState } from "react";
 import { useVscodeMessages } from "./hooks/useVscodeMessages";
+import { useLiveflowStore } from "./store";
 import { StateIndicator } from "./components/StateIndicator";
 import { AgentGraph } from "./components/AgentGraph";
 import { ToolTimeline } from "./components/ToolTimeline";
 import { Transcript } from "./components/Transcript";
 import { ChatInspector } from "./components/ChatInspector";
+import { WelcomeView } from "./components/WelcomeView";
 
 // Panel wrapper with collapsible header
 function Panel({
@@ -69,6 +71,15 @@ function Panel({
 export default function App() {
   // Initialize the VS Code message bridge
   useVscodeMessages();
+
+  // Show welcome screen when no session data has arrived yet
+  const hasSession = useLiveflowStore(
+    (s) => s.sessionStarted || s.agents.length > 0
+  );
+
+  if (!hasSession) {
+    return <WelcomeView />;
+  }
 
   return (
     <div

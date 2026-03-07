@@ -11,7 +11,7 @@ declare function acquireVsCodeApi(): {
 // Cache the API instance (can only call acquireVsCodeApi once)
 let vscodeApi: ReturnType<typeof acquireVsCodeApi> | null = null;
 
-function getVsCodeApi() {
+export function getVsCodeApi() {
   if (!vscodeApi) {
     try {
       vscodeApi = acquireVsCodeApi();

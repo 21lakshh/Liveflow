@@ -20,6 +20,12 @@ export class LiveflowWebviewProvider implements vscode.WebviewViewProvider {
   /** The view-id declared in package.json contributes.views */
   static readonly viewId = "liveflow.sidebar";
 
+  /**
+   * Callback fired whenever the sidebar becomes visible.
+   * extension.ts uses this to trigger server auto-detection.
+   */
+  onViewReady: (() => void) | null = null;
+
   constructor(extensionUri: vscode.Uri) {
     this.extensionUri = extensionUri;
   }
@@ -44,6 +50,9 @@ export class LiveflowWebviewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this.getHtmlContent(webviewView.webview);
 
+    // Notify extension.ts that the sidebar is visible — triggers server auto-detect
+    this.onViewReady?.();
+
     // Handle messages from the React app
     webviewView.webview.onDidReceiveMessage((msg) => {
       if (msg.type === "webview_ready") {
@@ -59,6 +68,9 @@ export class LiveflowWebviewProvider implements vscode.WebviewViewProvider {
           this._view?.webview.postMessage(queued);
         }
         this.messageQueue = [];
+      } else if (msg.type === "run_agent") {
+        // User clicked "Run with Liveflow" in the welcome screen
+        vscode.commands.executeCommand("liveflow.runAgent");
       }
     });
 
@@ -67,11 +79,11 @@ export class LiveflowWebviewProvider implements vscode.WebviewViewProvider {
       this.webviewReady = false;
     });
 
-    // If the view becomes visible again after being hidden, refresh the HTML
-    // so the latest persistent messages are embedded.
+    // When the sidebar becomes visible again, trigger server auto-detect.
+    // Do NOT reload HTML here — retainContextWhenHidden keeps React alive.
     webviewView.onDidChangeVisibility(() => {
       if (webviewView.visible) {
-        webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+        this.onViewReady?.();
       }
     });
   }
@@ -134,8 +146,8 @@ export class LiveflowWebviewProvider implements vscode.WebviewViewProvider {
   reset(): void {
     this.messageQueue = [];
     this.persistentMessages = [];
-    this.webviewReady = false;
-    // Reload HTML so stale data is cleared
+    this.webviewReady = false; // must be false before HTML reload so messages queue
+    // Reload HTML so stale session data is wiped from the React store
     if (this._view) {
       this._view.webview.html = this.getHtmlContent(this._view.webview);
     }
