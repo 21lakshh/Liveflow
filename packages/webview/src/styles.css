@@ -73,6 +73,24 @@ body {
   }
 }
 
+/* Particle glow animation for animated edges */
+@keyframes particle-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Expand/collapse transition for agent nodes */
+@keyframes expand-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Active agent breathing glow */
+@keyframes active-glow {
+  0%, 100% { box-shadow: 0 0 8px 2px rgba(74, 222, 128, 0.3); }
+  50%      { box-shadow: 0 0 18px 6px rgba(74, 222, 128, 0.15); }
+}
+
 /* ReactFlow overrides for dark theme */
 .react-flow__background {
   background: var(--vscode-editor-background, #121218) !important;
@@ -94,6 +112,17 @@ body {
 
 .react-flow__minimap {
   background: #1a1a1a !important;
+}
+
+/* MiniMap node colors */
+.react-flow__minimap-node {
+  fill: #444 !important;
+  stroke: #666 !important;
+}
+
+/* Hide default ReactFlow attribution */
+.react-flow__attribution {
+  display: none !important;
 }
 
 /* Button styles */

@@ -40,6 +40,10 @@ interface LiveflowState {
   // ---- Chat Context ----
   chatContext: ChatContextItem[]; // Full chat_ctx snapshot
 
+  // ---- Stats ----
+  agentActiveTime: Record<string, number>; // cumulative ms each agent was active
+  agentActiveSince: string | null; // ISO timestamp when currentAgent became active
+
   // ---- Errors ----
   errors: Array<{ type: string; message: string; timestamp: string }>;
 
@@ -66,6 +70,8 @@ const initialState = {
   handoffs: [] as Handoff[],
   lastHandoff: null as Handoff | null,
   chatContext: [] as ChatContextItem[],
+  agentActiveTime: {} as Record<string, number>,
+  agentActiveSince: null as string | null,
   errors: [] as Array<{ type: string; message: string; timestamp: string }>,
 };
 
@@ -123,6 +129,7 @@ export const useLiveflowStore = create<LiveflowState>((set, get) => ({
           agentState: (m.agent_state || "initializing") as AgentState,
           userState: (m.user_state || "listening") as UserState,
           sessionStarted: true,
+          agentActiveSince: msg.timestamp,
         }));
         break;
       }
@@ -140,10 +147,22 @@ export const useLiveflowStore = create<LiveflowState>((set, get) => ({
           newAgentId && !agentExists
             ? [...existingAgents, { id: newAgentId, name: newAgentId, instructions: "", tools: [] } as AgentInfo]
             : existingAgents;
+        // Accumulate time for the previously-active agent
+        const prevId = get().currentAgentId;
+        const since = get().agentActiveSince;
+        const elapsed = since ? Date.now() - new Date(since).getTime() : 0;
+        const activeTime = { ...get().agentActiveTime };
+        if (prevId && elapsed > 0) {
+          activeTime[prevId] = (activeTime[prevId] || 0) + elapsed;
+        }
+
+        const resolvedAgentId = newAgentId || prevId;
         set({
           agents: updatedAgents,
           agentState: m.new_state as AgentState,
-          currentAgentId: newAgentId || get().currentAgentId,
+          currentAgentId: resolvedAgentId,
+          agentActiveTime: activeTime,
+          agentActiveSince: resolvedAgentId !== prevId ? m.timestamp : since,
         });
         break;
       }
@@ -251,11 +270,22 @@ export const useLiveflowStore = create<LiveflowState>((set, get) => ({
           };
           upsert(m.old_agent_id, m.old_agent_name);
           upsert(m.new_agent_id, m.new_agent_name);
+
+          // Accumulate active time for the old agent
+          const since = state.agentActiveSince;
+          const elapsed = since ? Date.now() - new Date(since).getTime() : 0;
+          const activeTime = { ...state.agentActiveTime };
+          if (m.old_agent_id && elapsed > 0) {
+            activeTime[m.old_agent_id] = (activeTime[m.old_agent_id] || 0) + elapsed;
+          }
+
           return {
             agents,
             handoffs: [...state.handoffs, handoff],
             lastHandoff: handoff,
             currentAgentId: m.new_agent_id,
+            agentActiveTime: activeTime,
+            agentActiveSince: m.timestamp,
           };
         });
 
