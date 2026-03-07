@@ -345,32 +345,6 @@ async function runWithLiveflow(context: vscode.ExtensionContext) {
     selectedFile = (picked as any).uri;
   }
 
-  // ---- Pick run mode ----
-  const mode = await vscode.window.showQuickPick(
-    [
-      {
-        label: "dev",
-        description: "Connect to LiveKit server (development mode)",
-        detail: "Use with agents-playground.livekit.io",
-      },
-      {
-        label: "console",
-        description: "Local mic/speaker (no server needed)",
-        detail: "Quick testing with your microphone",
-      },
-      {
-        label: "start",
-        description: "Production mode",
-        detail: "Standard LiveKit worker start",
-      },
-    ],
-    {
-      placeHolder: "Select run mode",
-      title: "Liveflow: Run Mode",
-    }
-  );
-  if (!mode) return;
-
   // ---- Launch terminal ----
   const scriptPath = selectedFile.fsPath;
   const workspaceFolder =
@@ -385,7 +359,7 @@ async function runWithLiveflow(context: vscode.ExtensionContext) {
 
   agentTerminal.show(true); // Show the terminal so user can see agent output
   agentTerminal.sendText(
-    `python -m liveflow ${path.relative(workspaceFolder, scriptPath)} ${mode.label}`
+    `python -m liveflow ${path.relative(workspaceFolder, scriptPath)} dev`
   );
 
   // Update status bar to show running state
