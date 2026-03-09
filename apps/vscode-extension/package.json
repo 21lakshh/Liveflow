@@ -12,8 +12,23 @@
   "engines": {
     "vscode": "^1.85.0"
   },
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#121218",
+    "theme": "dark"
+  },
+  "keywords": [
+    "livekit",
+    "agents",
+    "voice agent",
+    "visualization",
+    "debugging",
+    "realtime",
+    "ai agent"
+  ],
   "categories": [
-    "Visualization"
+    "Visualization",
+    "Debuggers"
   ],
   "activationEvents": [
     "workspaceContains:**/agent.py",
