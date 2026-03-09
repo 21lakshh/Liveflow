@@ -129,7 +129,7 @@ export function WelcomeView() {
           Get started
         </p>
         <Step number={1} title="Install the Python package" code="pip install liveflow" />
-        <Step number={2} title="Run your agent with Liveflow" code="python liveflow agent.py dev" />
+        <Step number={2} title="Run your agent with Liveflow" code="liveflow agent.py dev" />
         <Step
           number={3}
           title="Dashboard connects automatically"
