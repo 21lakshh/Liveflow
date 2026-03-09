@@ -87,24 +87,64 @@ def _print_banner(port: int, script: str) -> None:
     print("\033[36m" + "=" * 60 + "\033[0m")
 
 
+def _print_help() -> None:
+    """Print a rich help screen."""
+    from . import __version__
+    c = "\033[36m"   # cyan
+    b = "\033[1m"    # bold
+    g = "\033[32m"   # green
+    y = "\033[33m"   # yellow
+    d = "\033[2m"    # dim
+    r = "\033[0m"    # reset
+
+    print(f"""
+{c}{b}  🔍 Liveflow {__version__} — LiveKit Agent Visualizer{r}
+{d}  Real-time debugger for LiveKit voice agents. No code changes needed.{r}
+
+{b}Usage:{r}
+  {g}liveflow{r} {y}<agent.py>{r} {y}[mode]{r} {d}[args...]{r}
+  {g}liveflow{r} {y}<command>{r}
+
+{b}Commands:{r}
+  {g}--help{r}, {g}-h{r}      Show this help message
+  {g}--version{r}, {g}-V{r}   Show version number
+
+{b}Examples:{r}
+  {g}liveflow agent.py dev{r}
+
+  {d}# Pass extra args through to your agent{r}
+  {g}liveflow agent.py dev --log-level DEBUG{r}
+
+{b}VS Code Extension:{r}
+  Install the Liveflow extension and click {b}▶ Run with Liveflow{r}
+  in the editor title bar — no terminal command needed.
+
+  {d}marketplace.visualstudio.com/items?itemName=liveflow.liveflow{r}
+
+{b}Source:{r}
+  {d}github.com/21lakshh/Liveflow{r}
+""")
+
+
 def main() -> None:
     """
     Main entry point.
     
     Parses args, starts the server + hook, then runs the user's script.
     The user's script gets sys.argv as if it was run directly:
-        python -m liveflow agent.py dev  →  sys.argv = ["agent.py", "dev"]
+        liveflow agent.py dev  →  sys.argv = ["agent.py", "dev"]
     """
     _setup_logging()
-    
-    # ---- Parse arguments ----
-    if len(sys.argv) < 2:
-        print("Usage: python -m liveflow <agent-script.py> [dev|console|start] [args...]")
-        print()
-        print("Example:")
-        print("  python -m liveflow agent.py dev")
-        print("  python -m liveflow agent.py console")
-        sys.exit(1)
+
+    # ---- Handle flags / no args ----
+    if len(sys.argv) < 2 or sys.argv[1] in ("--help", "-h", "help"):
+        _print_help()
+        sys.exit(0)
+
+    if sys.argv[1] in ("--version", "-V", "version"):
+        from . import __version__
+        print(f"liveflow {__version__}")
+        sys.exit(0)
     
     script_path = sys.argv[1]
     
