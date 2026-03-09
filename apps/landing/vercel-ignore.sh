@@ -10,8 +10,8 @@ CHANGED=$?
 
 if [ $CHANGED -eq 0 ]; then
   echo "No changes in apps/landing/ — skipping deployment."
-  exit 1
+  exit 0
 else
   echo "Changes detected in apps/landing/ — deploying."
-  exit 0
+  exit 1
 fi
