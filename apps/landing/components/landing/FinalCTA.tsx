@@ -53,7 +53,7 @@ const FinalCTA = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <button className="px-8 py-3.5 rounded-full bg-foreground text-background font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_40px_rgba(34,211,238,0.25)] hover:scale-[1.03]">
+          <button onClick={() => window.open("https://marketplace.visualstudio.com/items?itemName=liveflow.liveflow", "_blank")} className="px-8 py-3.5 rounded-full bg-foreground text-background font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_40px_rgba(34,211,238,0.25)] hover:scale-[1.03]">
             Install Liveflow
           </button>
         </motion.div>

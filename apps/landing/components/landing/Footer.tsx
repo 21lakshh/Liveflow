@@ -7,14 +7,11 @@ const links = {
   Product: [
     { label: "Features", href: "#features" },
     { label: "How It Works", href: "#how-it-works" },
-    { label: "VS Code Extension", href: "#" },
-    { label: "GitHub", href: "https://github.com" },
+    { label: "VS Code Extension", href: "https://marketplace.visualstudio.com/items?itemName=liveflow.liveflow" },
+    { label: "GitHub", href: "https://github.com/21lakshh/Liveflow" },
   ],
   Resources: [
-    { label: "Documentation", href: "#" },
-    { label: "PyPI Package", href: "https://pypi.org" },
-    { label: "Changelog", href: "#" },
-    { label: "Issues", href: "#" },
+    { label: "PyPI Package", href: "https://pypi.org/project/liveflow/" },
   ],
 };
 

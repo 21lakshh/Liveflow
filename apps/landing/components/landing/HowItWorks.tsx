@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Copy, Check, Puzzle } from "lucide-react";
+import { Copy, Check, Puzzle, ExternalLink } from "lucide-react";
 
 function CommandBlock({ command }: { command: string }) {
   const [copied, setCopied] = useState(false);
@@ -36,15 +36,15 @@ const steps = [
   },
   {
     num: "02",
-    title: "Download the VS Code Extension",
+    title: "Install the VS Code Extension",
     desc: "Visualize your agent's state directly inside your editor.",
     isButton: true,
   },
   {
     num: "03",
     title: "Run Your Agent",
-    desc: "Wrap your agent entrypoint with the liveflow dev runner.",
-    command: "python liveflow agent.py dev",
+    desc: "Drop-in replacement for your normal run command. No code changes needed.",
+    command: "liveflow agent.py dev",
   },
 ];
 
@@ -95,16 +95,16 @@ const HowItWorks = () => {
 
                   {step.isButton && (
                     <div className="mt-4">
-                      <button
-                        disabled
-                        className="inline-flex items-center gap-2.5 rounded-md border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground opacity-80 cursor-not-allowed transition-all hover:border-primary hover:text-primary hover:opacity-100"
+                      <a
+                        href="https://marketplace.visualstudio.com/items?itemName=liveflow.liveflow"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2.5 rounded-md border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition-all hover:border-primary hover:text-primary"
                       >
                         <Puzzle size={15} className="text-primary" />
                         Install VS Code Extension
-                        <span className="ml-1 rounded-sm bg-border px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
-                          coming soon
-                        </span>
-                      </button>
+                        <ExternalLink size={12} className="text-muted-foreground" />
+                      </a>
                     </div>
                   )}
                 </div>
