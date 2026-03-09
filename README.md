@@ -24,29 +24,23 @@ Auto-detects LiveKit projects, provides a "Run with Liveflow" button, connects t
 
 ```bash
 pip install liveflow
-# OR install from source:
-cd python && pip install -e .
 ```
 
 ### 2. Run your agent with Liveflow
 
-Instead of:
 ```bash
+# Before
 python agent.py dev
+
+# After — drop-in replacement
+liveflow agent.py dev
 ```
 
-Run:
-```bash
-python liveflow agent.py dev
-```
-
-That's it! Your agent runs exactly as before, but Liveflow captures everything.
+Your agent runs exactly as before. Liveflow captures everything transparently in the background.
 
 ### 3. Open the VS Code Dashboard
 
-The extension auto-detects the running Liveflow server and opens the dashboard panel. You can also use:
-- **Status bar**: Click "⚡ Liveflow" 
-- **Command palette**: `Liveflow: Run with Liveflow`
+Install the [Liveflow VS Code extension](https://marketplace.visualstudio.com/items?itemName=liveflow.liveflow) — it auto-connects to the running Liveflow server and opens the dashboard in the Activity Bar sidebar. You can also click **▶ Run with Liveflow** in the editor title bar to skip step 2 entirely.
 
 ## Architecture
 
@@ -54,17 +48,17 @@ The extension auto-detects the running Liveflow server and opens the dashboard p
 ┌──────────────────────────┐    WebSocket     ┌──────────────────────┐
 │  Liveflow Python Shim    │ ──────────────▶  │  VS Code Extension   │
 │                          │   JSON events    │                      │
-│  • Patches AgentSession  │                  │  • Webview panel     │
+│  • Patches AgentSession  │                  │  • Webview sidebar   │
 │  • Captures all events   │                  │  • ReactFlow graph   │
 │  • Local WS server       │                  │  • Zustand store     │
 └──────────────────────────┘                  └──────────────────────┘
-         ▲                                              
-         │  monkey-patch (transparent)                  
-         │                                              
-┌──────────────────────────┐                            
-│  Your agent.py           │  ← UNMODIFIED              
-│  (LiveKit Agents SDK)    │                            
-└──────────────────────────┘                            
+         ▲
+         │  transparent monkey-patch
+         │
+┌──────────────────────────┐
+│  Your agent.py           │  ← UNMODIFIED
+│  (LiveKit Agents SDK)    │
+└──────────────────────────┘
 ```
 
 ### Intercepted Events
@@ -83,75 +77,105 @@ The extension auto-detects the running Liveflow server and opens the dashboard p
 
 ## Project Structure
 
+This is a [Turborepo](https://turbo.build/repo) monorepo.
+
 ```
 Liveflow/
-├── python/                      # pip-installable Python package
-│   ├── pyproject.toml
-│   └── liveflow/
-│       ├── __init__.py
-│       ├── __main__.py          # Entry: python -m liveflow
-│       ├── protocol.py          # JSON message schemas (Pydantic)
-│       ├── interceptor.py       # SDK monkey-patching
-│       └── ws_server.py         # WebSocket broadcast server
+├── apps/
+│   ├── vscode-extension/        # VS Code extension (esbuild)
+│   │   ├── package.json
+│   │   ├── src/
+│   │   │   ├── extension.ts     # Activation, commands, LiveKit detection
+│   │   │   └── webviewProvider.ts
+│   │   └── media/               # Icons
+│   │
+│   └── landing/                 # Next.js marketing site
+│       └── ...
 │
-└── extension/                   # VS Code extension
-    ├── package.json             # Extension manifest
-    ├── src/
-    │   ├── extension.ts         # Activation, commands, LiveKit detection
-    │   ├── wsClient.ts          # WebSocket client → Python server
-    │   ├── webviewProvider.ts   # Webview panel management
-    │   └── types.ts             # TypeScript protocol types
-    │
-    └── webview/                 # React dashboard (built separately)
-        ├── package.json
-        ├── vite.config.ts
-        └── src/
-            ├── main.tsx
-            ├── App.tsx          # 4-panel layout
-            ├── styles.css
-            ├── types.ts
-            ├── store/index.ts   # Zustand state management
-            ├── hooks/useVscodeMessages.ts
-            └── components/
-                ├── AgentGraph.tsx      # ReactFlow agent network
-                ├── ToolTimeline.tsx    # Tool execution log
-                ├── Transcript.tsx      # Conversation view
-                ├── StateIndicator.tsx  # Status bar
-                └── ChatInspector.tsx   # LLM context browser
+├── packages/
+│   └── webview/                 # React dashboard (Vite)
+│       └── src/
+│           ├── App.tsx
+│           ├── store/index.ts   # Zustand state
+│           └── components/
+│               ├── AgentGraph.tsx
+│               ├── ToolTimeline.tsx
+│               ├── Transcript.tsx
+│               ├── ChatInspector.tsx
+│               └── StateIndicator.tsx
+│
+└── python/                      # pip-installable Python package
+    ├── pyproject.toml
+    └── liveflow/
+        ├── __main__.py          # CLI entry: liveflow agent.py dev
+        ├── interceptor.py       # SDK monkey-patching
+        ├── ws_server.py         # WebSocket broadcast server
+        └── protocol.py          # Pydantic message schemas
 ```
 
 ## Development
 
-### Build the React webview
+### Prerequisites
+
+- Node.js ≥ 18
+- npm ≥ 9
+- Python ≥ 3.9
+
+### Install dependencies
+
 ```bash
-cd extension/webview
 npm install
-npm run build
 ```
 
-### Build the extension
+### Build everything
+
 ```bash
-cd extension
-npm install
-npm run build
+npx turbo run build
+```
+
+### Build a specific package
+
+```bash
+# Webview + extension only
+npx turbo run build --filter=liveflow
+
+# Landing site only
+npx turbo run build --filter=landing
+```
+
+### Package the VS Code extension
+
+```bash
+cd apps/vscode-extension
+npx vsce package --no-dependencies
+code --install-extension liveflow-0.1.0.vsix
+```
+
+### Build the Python package
+
+```bash
+cd python
+pip install -e .        # local dev install
+python -m build         # produce dist/ for PyPI
 ```
 
 ### Test end-to-end
-```bash
-# Terminal 1: Install and run the Python package with your agent
-cd python && pip install -e .
-cd /path/to/your/agent
-python -m liveflow agent.py dev
 
-# Terminal 2: Open VS Code with the extension loaded
-cd extension && code --extensionDevelopmentPath=. /path/to/your/agent
+```bash
+# Terminal 1: run your agent via Liveflow
+cd /path/to/your/agent
+liveflow agent.py dev
+
+# Terminal 2: open VS Code with the dev extension loaded
+cd apps/vscode-extension
+code --extensionDevelopmentPath=. /path/to/your/agent
 ```
 
 ## Requirements
 
 - **Python**: ≥ 3.9
 - **LiveKit Agents SDK**: ≥ 1.0.0
-- **Node.js**: ≥ 18 (for building the extension)
+- **Node.js**: ≥ 18
 - **VS Code**: ≥ 1.85.0
 
 ## License
