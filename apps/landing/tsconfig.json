@@ -28,7 +28,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "node_modules/next-video/video-types/global.d.ts",
+    "../../node_modules/next-video/video-types/global.d.ts"
   ],
   "exclude": ["node_modules"]
 }
