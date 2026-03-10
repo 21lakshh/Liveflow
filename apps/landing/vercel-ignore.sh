@@ -5,7 +5,10 @@
 
 echo "Checking for changes in apps/landing/..."
 
-git diff HEAD^ HEAD --quiet -- apps/landing/
+# Use the last deployed commit if available, otherwise fall back to HEAD^
+BASE=${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}
+
+git diff "$BASE" HEAD --quiet -- apps/landing/
 CHANGED=$?
 
 if [ $CHANGED -eq 0 ]; then
