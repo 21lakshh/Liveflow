@@ -17,7 +17,6 @@ export default function Home() {
       <HowItWorks />
       <FinalCTA />
       <Footer />
-      <div>hi there</div>
     </div>
   );
 }
