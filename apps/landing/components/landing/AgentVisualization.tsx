@@ -74,7 +74,7 @@ const AgentVisualization = () => {
         ctx.beginPath();
         ctx.moveTo(na.x, na.y);
         ctx.lineTo(nb.x, nb.y);
-        ctx.strokeStyle = "rgba(34, 211, 238, 0.1)";
+        ctx.strokeStyle = "rgba(52, 211, 103, 0.1)";
         ctx.lineWidth = 1;
         ctx.stroke();
       });
@@ -98,13 +98,13 @@ const AgentVisualization = () => {
 
         ctx.beginPath();
         ctx.arc(sx, sy, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(103, 232, 249, 0.9)";
+        ctx.fillStyle = "rgba(134, 239, 172, 0.9)";
         ctx.fill();
 
         // Trail
         const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, 12);
-        grad.addColorStop(0, "rgba(34, 211, 238, 0.4)");
-        grad.addColorStop(1, "rgba(34, 211, 238, 0)");
+        grad.addColorStop(0, "rgba(52, 211, 103, 0.4)");
+        grad.addColorStop(1, "rgba(52, 211, 103, 0)");
         ctx.beginPath();
         ctx.arc(sx, sy, 12, 0, Math.PI * 2);
         ctx.fillStyle = grad;
@@ -118,8 +118,8 @@ const AgentVisualization = () => {
 
         // Glow
         const glow = ctx.createRadialGradient(n.x, n.y, n.radius * 0.5, n.x, n.y, n.radius * 2.5);
-        glow.addColorStop(0, `rgba(34, 211, 238, ${glowAlpha})`);
-        glow.addColorStop(1, "rgba(34, 211, 238, 0)");
+        glow.addColorStop(0, `rgba(52, 211, 103, ${glowAlpha})`);
+        glow.addColorStop(1, "rgba(52, 211, 103, 0)");
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius * 2.5, 0, Math.PI * 2);
         ctx.fillStyle = glow;
@@ -129,19 +129,19 @@ const AgentVisualization = () => {
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.strokeStyle = n.active
-          ? `rgba(34, 211, 238, ${0.6 + pulse * 0.4})`
-          : `rgba(34, 211, 238, ${0.15 + pulse * 0.1})`;
+          ? `rgba(52, 211, 103, ${0.6 + pulse * 0.4})`
+          : `rgba(52, 211, 103, ${0.15 + pulse * 0.1})`;
         ctx.lineWidth = n.active ? 2 : 1;
         ctx.stroke();
 
         // Fill
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        ctx.fillStyle = n.active ? "rgba(34, 211, 238, 0.08)" : "rgba(17, 17, 17, 0.8)";
+        ctx.fillStyle = n.active ? "rgba(52, 211, 103, 0.08)" : "rgba(8, 18, 12, 0.8)";
         ctx.fill();
 
         // Label
-        ctx.fillStyle = n.active ? "rgba(103, 232, 249, 1)" : "rgba(161, 161, 170, 0.8)";
+        ctx.fillStyle = n.active ? "rgba(134, 239, 172, 1)" : "rgba(148, 165, 155, 0.8)";
         ctx.font = "11px Inter, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(n.label, n.x, n.y + 4);
@@ -155,7 +155,7 @@ const AgentVisualization = () => {
         const h = (Math.sin(time * 3 + i * 0.4) * 0.5 + 0.5) *
                   (Math.sin(time * 1.7 + i * 0.2) * 0.3 + 0.7) * 20 + 3;
         const alpha = 0.3 + (Math.sin(time * 2 + i * 0.3) * 0.2);
-        ctx.fillStyle = `rgba(34, 211, 238, ${alpha})`;
+        ctx.fillStyle = `rgba(52, 211, 103, ${alpha})`;
         ctx.fillRect(x, waveY - h / 2, barWidth - 2, h);
       }
 

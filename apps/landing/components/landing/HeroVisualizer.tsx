@@ -76,9 +76,9 @@ export default function HeroVisualizer() {
 
       {/* State indicator dots */}
       <div className="absolute top-2 left-4 flex items-center gap-2">
-        <div className={`w-2 h-2 rounded-full ${state === "connecting" ? "bg-yellow-500 shadow-[0_0_8px_#EAB308]" : "bg-border"}`} />
-        <div className={`w-2 h-2 rounded-full ${state === "listening" ? "bg-green-500 shadow-[0_0_8px_#22C55E]" : "bg-border"}`} />
-        <div className={`w-2 h-2 rounded-full ${state === "thinking" ? "bg-purple-500 shadow-[0_0_8px_#A855F7]" : "bg-border"}`} />
+        <div className={`w-2 h-2 rounded-full ${state === "connecting" ? "bg-amber-400 shadow-[0_0_8px_#FBBF24]" : "bg-border"}`} />
+        <div className={`w-2 h-2 rounded-full ${state === "listening" ? "bg-primary shadow-[0_0_8px_hsl(var(--accent-glow))]" : "bg-border"}`} />
+        <div className={`w-2 h-2 rounded-full ${state === "thinking" ? "bg-emerald-300 shadow-[0_0_8px_#6EE7B7]" : "bg-border"}`} />
         <div className={`w-2 h-2 rounded-full ${state === "speaking" ? "bg-primary shadow-[0_0_8px_hsl(var(--accent-glow))]" : "bg-border"}`} />
       </div>
     </div>

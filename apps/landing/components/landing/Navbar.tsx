@@ -42,7 +42,7 @@ const Navbar = () => {
         {/* CTA */}
         <a
           href="#how-it-works"
-          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold tracking-tight hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all duration-300 hover:scale-[1.03]"
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold tracking-tight hover:shadow-[0_0_20px_rgba(52,211,103,0.3)] transition-all duration-300 hover:scale-[1.03]"
         >
           Get Started
         </a>

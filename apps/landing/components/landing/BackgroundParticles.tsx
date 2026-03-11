@@ -34,7 +34,7 @@ const BackgroundParticles = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Grid
-      ctx.strokeStyle = "rgba(34, 211, 238, 0.03)";
+      ctx.strokeStyle = "rgba(52, 211, 103, 0.03)";
       ctx.lineWidth = 0.5;
       const gridSize = 80;
       for (let x = 0; x < canvas.width; x += gridSize) {
@@ -60,7 +60,7 @@ const BackgroundParticles = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(34, 211, 238, ${p.opacity})`;
+        ctx.fillStyle = `rgba(52, 211, 103, ${p.opacity})`;
         ctx.fill();
       });
 

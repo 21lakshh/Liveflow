@@ -14,7 +14,7 @@ function CommandBlock({ command }: { command: string }) {
   };
 
   return (
-    <div className="mt-4 flex items-center justify-between gap-3 rounded-md border border-border bg-[#0a0a0a] px-4 py-2.5 font-mono text-sm">
+    <div className="mt-4 flex items-center justify-between gap-3 rounded-md border border-border bg-[#080e0b] px-4 py-2.5 font-mono text-sm">
       <span className="text-primary select-all">{command}</span>
       <button
         onClick={copy}

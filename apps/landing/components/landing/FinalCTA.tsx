@@ -14,7 +14,7 @@ const FinalCTA = () => {
         className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-40 w-[700px] h-[380px] rounded-[50%]"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 0%, hsl(187 82% 53% / 0.22) 0%, hsl(187 82% 53% / 0.07) 55%, transparent 75%)",
+            "radial-gradient(ellipse at 50% 0%, hsl(145 65% 52% / 0.22) 0%, hsl(145 65% 52% / 0.07) 55%, transparent 75%)",
           filter: "blur(1px)",
         }}
       />
@@ -23,7 +23,7 @@ const FinalCTA = () => {
         aria-hidden
         className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-40 w-[700px] h-[380px] rounded-[50%]"
         style={{
-          boxShadow: "inset 0 1px 0 0 hsl(187 82% 53% / 0.35)",
+          boxShadow: "inset 0 1px 0 0 hsl(145 65% 52% / 0.35)",
         }}
       />
 
@@ -53,7 +53,7 @@ const FinalCTA = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <button onClick={() => window.open("https://marketplace.visualstudio.com/items?itemName=liveflow.liveflow", "_blank")} className="px-8 py-3.5 rounded-full bg-foreground text-background font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_40px_rgba(34,211,238,0.25)] hover:scale-[1.03]">
+          <button onClick={() => window.open("https://marketplace.visualstudio.com/items?itemName=liveflow.liveflow", "_blank")} className="px-8 py-3.5 rounded-full bg-foreground text-background font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_40px_rgba(52,211,103,0.25)] hover:scale-[1.03]">
             Install Liveflow
           </button>
         </motion.div>

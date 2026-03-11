@@ -43,38 +43,38 @@
 }
 
 :root {
-  --background: 0 0% 0%;
-  --foreground: 0 0% 100%;
-  --card: 0 0% 6.7%;
-  --card-foreground: 0 0% 100%;
-  --popover: 0 0% 6.7%;
-  --popover-foreground: 0 0% 100%;
-  --primary: 187 82% 53%;
-  --primary-foreground: 0 0% 0%;
-  --secondary: 0 0% 9.4%;
-  --secondary-foreground: 240 5% 83.9%;
-  --muted: 240 3.7% 10.4%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 187 82% 53%;
-  --accent-foreground: 0 0% 0%;
+  --background: 150 18% 5%;
+  --foreground: 140 12% 94%;
+  --card: 150 15% 8%;
+  --card-foreground: 140 12% 94%;
+  --popover: 150 15% 8%;
+  --popover-foreground: 140 12% 94%;
+  --primary: 145 65% 52%;
+  --primary-foreground: 150 18% 5%;
+  --secondary: 150 12% 12%;
+  --secondary-foreground: 140 8% 78%;
+  --muted: 150 12% 13%;
+  --muted-foreground: 145 6% 60%;
+  --accent: 145 65% 52%;
+  --accent-foreground: 150 18% 5%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 15.3%;
-  --input: 0 0% 15.3%;
-  --ring: 187 82% 53%;
+  --border: 150 14% 17%;
+  --input: 150 14% 17%;
+  --ring: 145 65% 52%;
   --radius: .75rem;
   
-  --surface: 0 0% 6.7%;
-  --surface-subtle: 240 5.9% 10%;
-  --text-secondary: 240 5% 83.9%;
-  --text-muted: 240 3.8% 46.1%;
-  --text-dim: 240 3.8% 46.1%;
-  --accent-glow: 187 92% 69%;
-  --accent-hover: 187 85% 43%;
-  --accent-dark: 187 87% 37%;
-  --border-subtle: 0 0% 12.2%;
-  --border-default: 240 3.7% 15.9%;
-  --border-focus: 187 82% 53%;
+  --surface: 150 15% 8%;
+  --surface-subtle: 150 12% 11%;
+  --text-secondary: 140 8% 78%;
+  --text-muted: 145 5% 54%;
+  --text-dim: 145 5% 54%;
+  --accent-glow: 145 80% 65%;
+  --accent-hover: 145 60% 42%;
+  --accent-dark: 145 65% 34%;
+  --border-subtle: 150 14% 13%;
+  --border-default: 150 14% 17%;
+  --border-focus: 145 65% 52%;
 }
 
 body {
@@ -98,6 +98,15 @@ nav, nav * {
   text-shadow: 0 0 20px hsl(var(--accent-glow) / .5), 0 0 40px hsl(var(--accent-glow) / .2);
 }
 
+.glow-accent-sm {
+  box-shadow: 0 0 12px hsl(var(--accent-glow) / .2), 0 0 24px hsl(var(--accent-glow) / .1);
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px hsl(var(--accent-glow) / .35), 0 0 60px hsl(var(--accent-glow) / .15);
+}
+
+/* Legacy aliases */
 .glow-cyan-sm {
   box-shadow: 0 0 12px hsl(var(--accent-glow) / .2), 0 0 24px hsl(var(--accent-glow) / .1);
 }
